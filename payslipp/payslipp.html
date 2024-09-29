@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Name - Employee Payslip Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 100px;
+            border-radius: 50%;
+        }
+        .header h1 {
+            margin: 10px 0 5px;
+            font-size: 1.8em;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1em;
+            color: #555;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            display: none;
+        }
+        .login-container {
+            display: block;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"], input[type="number"], input[type="email"], input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .payslip {
+            display: none;
+        }
+        .payslip h2 {
+            margin-bottom: 10px;
+        }
+        .payslip p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .download-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .download-btn {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.0.0/docx.min.js"></script>
+</head>
+<body>
+
+    <!-- Login Form -->
+    <div class="container login-container" id="loginContainer">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <span class="error" id="usernameError"></span>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <span class="error" id="passwordError"></span>
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+    </div>
+
+    <!-- Payslip Form -->
+    <div class="container" id="payslipFormContainer">
+        <div class="header">
+            <h1>Company Name</h1>
+            <p>1234 Main Street, City, Country</p>
+            <p>Phone: +123 456 7890 | Email: info@company.com</p>
+        </div>
+        <h2>Employee Payslip Form</h2>
+        <form id="payslipForm">
+            <div class="form-group">
+                <label for="name">Employee Name</label>
+                <input type="text" id="name" name="name" required>
+                <span class="error" id="nameError"></span>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                <span class="error" id="emailError"></span>
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" id="department" name="department" required>
+            </div>
+            <div class="form-group">
+                <label for="dateOfJoining">Date of Joining</label>
+                <input type="date" id="dateOfJoining" name="dateOfJoining" required>
+            </div>
+            <div class="form-group">
+                <label for="workingDays">Working Days</label>
+                <input type="number" id="workingDays" name="workingDays" min="1" max="30" required>
+            </div>
+            <div class="form-group">
+                <label for="leaveDays">Leave Days</label>
+                <input type="number" id="leaveDays" name="leaveDays" min="0" max="30" required>
+            </div>
+            <div class="form-group">
+                <label for="bonus">Bonus</label>
+                <input type="number" id="bonus" name="bonus" min="0">
+            </div>
+            <div class="form-group">
+                <label for="totalDays">Total Days in Month</label>
+                <input type="number" id="totalDays" name="totalDays" value="31" readonly>
+            </div>
+            <button type="submit" class="btn">Generate Payslip</button>
+        </form>
+    </div>
+
+    <!-- Payslip Display Section -->
+    <div class="container payslip" id="payslipSection">
+        <h2>PAY SLIP For the Month of Aug-2024</h2>
+        <p>(From 01/08/2024 To 31/08/2024)</p>
+        
+        <table>
+            <tr>
+                <th>Employee Name</th>
+                <td id="payslipName"></td>
+            </tr>
+            <tr>
+                <th>E-Mail</th>
+                <td id="payslipEmail"></td>
+            </tr>
+            <tr>
+                <th>Department</th>
+                <td id="payslipDepartment"></td>
+            </tr>
+            <tr>
+                <th>Date of Joining</th>
+                <td id="payslipDOJ"></td>
+            </tr>
+            <tr>
+                <th>Leave Days</th>
+                <td id="payslipLeaveDays"></td>
+            </tr>
+        </table>
+
+        <p><strong>Salary:</strong> <span id="payslipSalary"></span></p>
+        <p><strong>Bonus:</strong> <span id="payslipBonus"></span></p>
+        <p><strong>Net Salary:</strong> <span id="payslipNetSalary"></span></p>
+
+        <div class="download-buttons">
+            <button class="download-btn" onclick="downloadWord()">Download Word</button>
+            <button class="download-btn" onclick="downloadPDF()">Download PDF</button>
+        </div>
+    </div>
+
+    <script>
+        const validUsername = "emp123";
+        const validPassword = "pass123";
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (username === validUsername && password === validPassword) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('payslipFormContainer').style.display = 'block';
+            } else {
+                document.getElementById('usernameError').textContent = 'Invalid username or password.';
+                document.getElementById('passwordError').textContent = 'Invalid username or password.';
+            }
+        });
+
+        document.getElementById('payslipForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const department = document.getElementById('department').value;
+            const dateOfJoining = document.getElementById('dateOfJoining').value;
+            const workingDays = Number(document.getElementById('workingDays').value);
+            const leaveDays = Number(document.getElementById('leaveDays').value);
+            const totalDays = Number(document.getElementById('totalDays').value);
+            const bonus = Number(document.getElementById('bonus').value) || 0;
+
+            const basicSalary = 5000; // Example basic salary
+            const perDaySalary = basicSalary / totalDays;
+            const salary = (workingDays - leaveDays) * perDaySalary;
+
+            document.getElementById('payslipName').textContent = name;
+            document.getElementById('payslipEmail').textContent = email;
+            document.getElementById('payslipDepartment').textContent = department;
+            document.getElementById('payslipDOJ').textContent = dateOfJoining;
+            document.getElementById('payslipLeaveDays').textContent = leaveDays;
+
+            document.getElementById('payslipSalary').textContent = salary.toFixed(2);
+            document.getElementById('payslipBonus').textContent = bonus.toFixed(2);
+            document.getElementById('payslipNetSalary').textContent = (salary + bonus).toFixed(2);
+
+            document.getElementById('payslipSection').style.display = 'block';
+        });
+
+        function downloadWord() {
+            // Your docx generation code
+        }
+
+        function downloadPDF() {
+            // Your pdf generation code
+        }
+    </script>
+</body>
+</html>
